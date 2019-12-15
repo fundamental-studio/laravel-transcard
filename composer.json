@@ -1,0 +1,57 @@
+{
+    "name": "fmtl-studio/laravel-transcard",
+    "description": "Laravel adapter to accept payments through the Transcard service.",
+    "type": "library",
+    "homepage": "https://www.fundamental.bg",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Konstantin Rachev",
+            "email": "konstantin@fundamental.bg",
+            "homepage": "https://www.fundamental.bg"
+        },
+        {
+            "name": "Vanya Ananieva",
+            "email": "vanya@fundamental.bg",
+            "homepage": "https://www.fundamental.bg"
+        },
+        {
+            "name": "Fundamental Studio Ltd",
+            "email": "info@fundamental.bg",
+            "homepage": "https://www.fundamental.bg"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Fundamental\\Transcard\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "nesbot/carbon": "^2.0",
+        "guzzlehttp/guzzle": "^6.5",
+        "illuminate/support": "^5.8|^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fundamental\\Transcard\\TranscardServiceProvider"
+            ],
+            "aliases": {
+                "Epay": "Fundamental\\Transcard\\Facades\\Facade"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
