@@ -1,4 +1,4 @@
-# Laravel ePay, EasyPay, BPay, ePay World integration module
+# Laravel Transcard
 Laravel wrapper for easy and seamless integration with Transcard VPOS.
 
 Made with love and code by [Fundamental Studio Ltd.](https://www.fundamental.bg)
