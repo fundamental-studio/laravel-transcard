@@ -263,8 +263,8 @@ class Transcard
             <input type="hidden" name="LANG" value="' . $this->language . '">
             <input type="hidden" name="ENCODED" value="' . $this->encoded . '">
             <input type="hidden" name="CHECKSUM" value="' . $this->checksum .'">
-            <input type="hidden" name="URL_OK" value="' . $this->urls['ok'] . '">
-            <input type="hidden" name="URL_CANCEL" value="' . $this->urls['cancel'] . '">';
+            <input type="hidden" name="URL_OK" value="' . $this->returnUrl . '">
+            <input type="hidden" name="URL_CANCEL" value="' . $this->returnUrl . '">';
     }
 
     /**
