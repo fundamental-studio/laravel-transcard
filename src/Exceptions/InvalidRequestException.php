@@ -4,6 +4,6 @@ namespace Fundamental\Transcard\Exceptions;
 
 use InvalidArgumentException;
 
-class InvalidExpirationException extends InvalidArgumentException
+class InvalidRequestException extends InvalidArgumentException
 {
 }

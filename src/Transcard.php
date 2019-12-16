@@ -4,10 +4,17 @@ namespace Fundamental\Transcard;
 
 use Carbon\Carbon;
 use Fundamental\Transcard\Exceptions\InvalidAmountException;
+use Fundamental\Transcard\Exceptions\CorruptedDataException;
+use Fundamental\Transcard\Exceptions\PublicKeyLoadException;
 use Fundamental\Transcard\Exceptions\InvalidInvoiceException;
+use Fundamental\Transcard\Exceptions\InvalidRequestException;
+use Fundamental\Transcard\Exceptions\PrivateKeyLoadException;
+use Fundamental\Transcard\Exceptions\InvalidResponseException;
 use Fundamental\Transcard\Exceptions\InvalidChecksumException;
 use Fundamental\Transcard\Exceptions\InvalidCurrencyException;
 use Fundamental\Transcard\Exceptions\InvalidExpirationException;
+use Fundamental\Transcard\Exceptions\InvalidCertificateException;
+use Fundamental\Transcard\Exceptions\CorrputedSignatureException;
 
 class Transcard
 {
@@ -39,6 +46,13 @@ class Transcard
     const AVAILABLE_TYPES = ['paylogin'];
     const AVAILABLE_CURRENCIES = ['BGN', 'EUR'];
 
+    /**
+     * Undocumented function
+     *
+     * @param String $type
+     * @param array $data
+     * @param String $language
+     */
     public function __construct(String $type = 'paylogin', array $data = [], String $language = 'BG')
     {
         $this->merchantId = config('TRANSCARD_MERCHANT_ID');
@@ -98,23 +112,29 @@ class Transcard
         $this->encodeRequestData();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $response
+     * @return void
+     */
     public function verifyResponse($response)
     {
         if (empty($response)) {
-            throw new Exception('Invalid response.', 1);
+            throw new InvalidResponseException();
         }
 
         $signPath = explode('#', $response);
 
         if (count($signPath) !== 2) {
-            throw new Exception('Invalid response.', 1);
+            throw new InvalidResponseException();
         }
 
         $certificate = $this->publicKeyPath;
         $publicKey = null;
 
         if (false === ($publicKey = openssl_pkey_get_public($certificate))) {
-            throw new Exception('Invalid certificate.', 1);
+            throw new InvalidCertificateException();
         }
 
         $data = base64_decode($signPath[0]);
@@ -126,23 +146,30 @@ class Transcard
         }
         else
         {
-            throw new Exception('Corrupted signature.', 1);
+            throw new CorruptedSignatureException();
         }
 
         return false;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $encoded
+     * @param [type] $response
+     * @return void
+     */
     public function verifyNotifyResponse($encoded, $response)
     {
         if (empty($encoded) or empty($response)) {
-            throw new Exception('Invalid request.', 1);
+            throw new InvalidRequestException();
         }
 
         $certificate = $this->publicKeyPath;
         $publicKey = null;
 
         if (false === ($publicKey = openssl_pkey_get_public($certificate))) {
-            throw new Exception('Invalid certificate.', 1);
+            throw new InvalidCertificateException();
         }
 
         $data = openssl_verify($encoded, base64_decode($response), $publicKey);
@@ -153,10 +180,16 @@ class Transcard
         }
         else
         {
-            throw new Exception('Corrupted signature.', 1);
+            throw new CorruptedSignatureException();
         }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param array $data
+     * @return String
+     */
     public function generateChecksum(array $data = []): String
     {
         $data = (count($data) == 0) ? $this->encoded : $data;
@@ -165,14 +198,14 @@ class Transcard
 
         if (false === ($privateKey = openssl_pkey_get_private($this->privateKey, $this->privateKeyPass)))
         {
-            throw new Exception('Error during private key load.', 1);
+            throw new PrivateKeyLoadException();
         }
 
         $signature = '';
 
         if (!openssl_sign($data, $signature, $privateKey))
         {
-            throw new Exception('Error during private key load.', 1);
+            throw new PrivateKeyLoadException();
         }
 
         openssl_free_key($privateKey);
@@ -180,6 +213,12 @@ class Transcard
         return base64_encode($signature);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param String $data
+     * @return array
+     */
     public function parseSignedData(String $data): array
     {
         $response = array();
@@ -242,6 +281,11 @@ class Transcard
             </form>';
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return array
+     */
     public function getPaymentParameters(): array
     {
         return [
@@ -256,13 +300,20 @@ class Transcard
         ];
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $pbKey
+     * @param array $data
+     * @return array
+     */
     public static function parseResult($pbKey, array $data): array
     {
         $publicKey = null;
 
         if (false === ($publicKey = openssl_pkey_get_public($pbKey)))
         {
-            throw new Exception('Error during public key load.', 1);
+            throw new PublicKeyLoadException();
         }
 
         $signature = openssl_verify($data['encoded'], base64_decode($data['checksum']), $publicKey);
@@ -273,7 +324,7 @@ class Transcard
         }
         else
         {
-            throw new Exception('Corrupted data.', 1);
+            throw new InvalidChecksumException();
         }
     }
 
