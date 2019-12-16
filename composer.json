@@ -45,7 +45,7 @@
                 "Fundamental\\Transcard\\TranscardServiceProvider"
             ],
             "aliases": {
-                "Epay": "Fundamental\\Transcard\\Facades\\Facade"
+                "Transcard": "Fundamental\\Transcard\\Facades\\Facade"
             }
         }
     },
