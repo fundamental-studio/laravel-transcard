@@ -55,18 +55,18 @@ class Transcard
      */
     public function __construct(String $type = 'paylogin', array $data = [], String $language = 'BG')
     {
-        $this->merchantId = config('TRANSCARD_MERCHANT_ID');
-        $this->isProduction = config('TRANSCARD_PRODUCTION');
+        $this->merchantId = config('merchantId');
+        $this->isProduction = config('production');
 
-        $this->privateKeyPath = config('TRANSCARD_PRIVATE_KEY');
-        $this->publicKeyPath = config('TRANSCARD_PUBLIC_KEY');
+        $this->privateKeyPath = config('privateKey');
+        $this->publicKeyPath = config('publicKey');
 
         $this->privateKey = 'file://' . $this->privateKeyPath;
         $this->publicKey = 'file://' . $this->publicKeyPath;
 
-        $this->privateKeyPass = config('TRANSCARD_PRIVATE_KEY_PASS');
+        $this->privateKeyPass = config('privateKeyPass');
 
-        $this->returnUrl = config('TRANSCARD_RETURN_URL');
+        $this->returnUrl = config('returnUrl');
 
         if (in_array($type, $this::AVAILABLE_TYPES)) {
             $this->type = $type;
@@ -100,7 +100,7 @@ class Transcard
 
         $this->data = [
             'MIN'           => $this->merchantId,
-            'INVOICE'       => ($invoice == false and config('TRANSCARD_GENERATE_INVOICE')) ? (sprintf("%.0f", rand() * 100000)) : $invoice,
+            'INVOICE'       => ($invoice == false and config('generateInvoice')) ? (sprintf("%.0f", rand() * 100000)) : $invoice,
             'AMOUNT'        => $amount,
             'DESCR'         => $description,
             'ENCODING'      => 'UTF-8',
