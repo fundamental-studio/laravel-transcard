@@ -14,11 +14,15 @@ class Transcard
     private $merchantId;
     private $isProduction;
 
+    private $language = 'BG';
+
     private $privateKey;
     private $publicKey;
 
     private $privateKeyPath;
     private $publicKeyPath;
+
+    private $privateKeyPass;
 
     private $returnUrl;
 
@@ -28,10 +32,11 @@ class Transcard
     private $encoded;
     private $checksum;
 
+    const AVAILABLE_LANGUAGES = ['BG', 'EN'];
     const AVAILABLE_TYPES = ['paylogin'];
     const AVAILABLE_CURRENCIES = ['BGN', 'EUR'];
 
-    public function __construct(String $type = 'paylogin')
+    public function __construct(String $type = 'paylogin', array $data = [], String $language = 'BG')
     {
         $this->merchantId = config('TRANSCARD_MERCHANT_ID');
         $this->isProduction = config('TRANSCARD_PRODUCTION');
@@ -42,10 +47,20 @@ class Transcard
         $this->privateKey = 'file://' . $this->privateKeyPath;
         $this->publicKey = 'file://' . $this->publicKeyPath;
 
+        $this->privateKeyPass = config('TRANSCARD_PRIVATE_KEY_PASS');
+
         $this->returnUrl = config('TRANSCARD_RETURN_URL');
 
         if (in_array($type, $this::AVAILABLE_TYPES)) {
             $this->type = $type;
+        }
+
+        if (in_array(strtoupper($language), $this::AVAILABLE_LANGUAGES)) {
+            $this->language = strtoupper($language);
+        }
+
+        if (isset($data['amount'])) {
+            $this->setData($data['invoice'], $data['amount'], $data['description']);
         }
     }
 
@@ -110,6 +125,8 @@ class Transcard
         {
             throw new Exception('Corrupted signature.', 1);
         }
+
+        return false;
     }
 
     public function verifyNotifyResponse($encoded, $response)
@@ -137,11 +154,13 @@ class Transcard
         }
     }
 
-    public function signData($data)
+    public function generateChecksum(array $data = []): String
     {
+        $data = (count($data) == 0) ? $this->encoded : $data;
+
         $privateKey = null;
 
-        if (false === ($privateKey = openssl_pkey_get_private($this->privateKey, '')))
+        if (false === ($privateKey = openssl_pkey_get_private($this->privateKey, $this->privateKeyPass)))
         {
             throw new Exception('Error during private key load.', 1);
         }
@@ -158,7 +177,7 @@ class Transcard
         return base64_encode($signature);
     }
 
-    public function parseSignedData($data)
+    public function parseSignedData(String $data): array
     {
         $response = array();
 
@@ -179,25 +198,53 @@ class Transcard
         return $response;
     }
 
-    public function generateTranscardPaymentFields()
+    public function generateTranscardPaymentFields(): String
     {
 
+        return '
+            <input type="hidden">';
     }
 
     public function getPaymentParameters(): array
     {
         return [
             'PAGE' => $this->type,
+            'ENCODED' => $this->encoded,
+            'CHECKSUM' => $this->generateChecksum(),
+            'LANG' => $this->language,
+
             'URL_OK' => $this->returnUrl,
             'URL_CANCEL' => $this->returnUrl
         ];
     }
 
-    public static function parseResult()
+    public static function parseResult($pbKey, array $data): array
     {
+        $publicKey = null;
 
+        if (false === ($publicKey = openssl_pkey_get_public($pbKey)))
+        {
+            throw new Exception('Error during public key load.', 1);
+        }
+
+        $signature = openssl_verify($data['encoded'], base64_decode($data['checksum']), $publicKey);
+
+        if ($signature)
+        {
+            return base64_decode($data['encoded']);
+        }
+        else
+        {
+            throw new Exception('Corrupted data.', 1);
+        }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param array $data
+     * @return array
+     */
     private function formatDataArray(array $data): array
     {
         $result = [];
