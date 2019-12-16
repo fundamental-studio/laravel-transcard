@@ -32,6 +32,9 @@ class Transcard
     private $encoded;
     private $checksum;
 
+    private $gatewayUrl = '';
+    private $testGatewayUrl = '';
+
     const AVAILABLE_LANGUAGES = ['BG', 'EN'];
     const AVAILABLE_TYPES = ['paylogin'];
     const AVAILABLE_CURRENCIES = ['BGN', 'EUR'];
@@ -198,16 +201,51 @@ class Transcard
         return $response;
     }
 
-    public function generateTranscardPaymentFields(): String
+    /**
+     * Get the target url for the ePay platform, using the english version and the test parameter.
+     *
+     * @return String
+     */
+    public function getTargetUrl(): String
+    {
+        return ($this->isProduction) ? $this->gatewayUrl : $this->testGatewayUrl;
+    }
+
+    /**
+     * Get all hidden input fields for the needed request.
+     *.
+     * @return String All needed hidden input fields
+     */
+    public function generatePaymentFields(): String
     {
 
         return '
-            <input type="hidden">';
+            <input type="hidden" name="PAGE" value="' . $this->type . '">
+            <input type="hidden" name="LANG" value="' . $this->language . '">
+            <input type="hidden" name="ENCODED" value="' . $this->encoded . '">
+            <input type="hidden" name="CHECKSUM" value="' . $this->checksum .'">
+            <input type="hidden" name="URL_OK" value="' . $this->urls['ok'] . '">
+            <input type="hidden" name="URL_CANCEL" value="' . $this->urls['cancel'] . '">';
+    }
+
+    /**
+     * Returns a html form with all hidden input fields for the needed request.
+     *
+     * @param String $id The id element of the generated form.
+     * @return String Html form with all hidden fields and set id attribute
+     */
+    public function generatePaymentForm(String $id = ''): String
+    {
+        return '
+            <form id="' . $id . '" action="' . $this->getTargetUrl() . '" method="post">
+                ' . $this->generatePaymentFields() . '
+            </form>';
     }
 
     public function getPaymentParameters(): array
     {
         return [
+            'URL' => $this->getTargetUrl(),
             'PAGE' => $this->type,
             'ENCODED' => $this->encoded,
             'CHECKSUM' => $this->generateChecksum(),
