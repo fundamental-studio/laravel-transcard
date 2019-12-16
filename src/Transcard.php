@@ -257,7 +257,6 @@ class Transcard
      */
     public function generatePaymentFields(): String
     {
-
         return '
             <input type="hidden" name="PAGE" value="' . $this->type . '">
             <input type="hidden" name="LANG" value="' . $this->language . '">
