@@ -20,7 +20,13 @@ $ php artisan vendor:publish --provider="Fundamental\Transcard\TranscardServiceP
 
 After publishing the config file, you should either add the needed keys to the global .env Laravel file:
 ```
-
+TRANSCARD_MERCHANT_ID=XXXXXXXXXX  # Official Merchant ID number, obtained from Transcard
+TRANSCARD_PRODUCTION=FALSE # Should the platform use the production or the test Transcard endpoint
+TRANSCARD_PRIVATE_KEY="" # Location of your private key file, make sure it is not available to public
+TRANSCARD_PRIVATE_KEY_PASS="" # Location of your private key password, make sure it this file is not available to public
+TRANSCARD_PUBLIC_KEY="" # Location of your public key file, make sure it is not available to public
+TRANSCARD_RETURN_URL=""
+TRANSCARD_GENERATE_INVOICE=TRUE # Should the package generate random invoice number if one isn't presented
 ```
 
 You are up & running and ready to go.
@@ -35,7 +41,7 @@ use Fundamental\Transcard\Transcard;
 
 Creating the instance of our package:
 ``` php
-$epay = new Transcard('paylogin', array $data, 'BG'); // Use either paylogin or credit_paydirect, the second parameter is documented in the next section and the third parameter is the request language page will be shown in: BG or EN, default: BG.
+$epay = new Transcard('paylogin', array $data, 'BG'); // The second parameter is documented in the next section and the third parameter is the request language page will be shown in: BG or EN, default: BG.
 $epay->setData(
     1000000000, // Could be either number or false(will be auto-generated if EPAY_GENERATE_INVOICE=TRUE)
     40.00, // Amount of the payment, double formatted either as double or string
@@ -54,8 +60,6 @@ All available methods are shown into the next section, including setter and gett
 
 Retrieve the correct and formatted hidden fields, form, or array with all the needed parameters.
 ``` php
-// Both, URL OK and URL Cancel can be ommitted as not required by the ePay platform.
-
 // Would return all hidden fields as formatted html
 $epay->generatePaymentFields();
 

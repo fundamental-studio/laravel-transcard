@@ -39,8 +39,8 @@ class Transcard
     private $encoded;
     private $checksum;
 
-    private $gatewayUrl = '';
-    private $testGatewayUrl = '';
+    private $gatewayUrl = 'https://online.transcard.bg/pay-gw/vpos';
+    private $testGatewayUrl = 'https://www.transcard.bg/pay-gw-t/vpos';
 
     const AVAILABLE_LANGUAGES = ['BG', 'EN'];
     const AVAILABLE_TYPES = ['paylogin'];
