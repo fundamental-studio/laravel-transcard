@@ -1,10 +1,10 @@
 <?php
 
-namespace Fundamental\Epay\Facades;
+namespace Fundamental\Transcard\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Epay extends Facade
+class Transcard extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class Epay extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'epay';
+        return 'transcard';
     }
 }
