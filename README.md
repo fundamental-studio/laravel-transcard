@@ -39,10 +39,7 @@ $epay = new Transcard('paylogin', array $data, 'BG'); // Use either paylogin or 
 $epay->setData(
     1000000000, // Could be either number or false(will be auto-generated if EPAY_GENERATE_INVOICE=TRUE)
     40.00, // Amount of the payment, double formatted either as double or string
-    '14.12.2019 20:46:00', // Could be either formatted date in d.m.Y H:i:s or false(will be auto-generated)
     'Description of the payment in less than 100 symbols.', // Could be empty
-    'BGN', // Available currencies: BGN, USD, EUR, default to bgn, may be ommited
-    'utf-8' // Encoding, either null or utf-8, may be ommitted
 );
 ```
 The setData function could be ommitted. The data may be set as array and second parameter to the constructor of the main class.
@@ -50,7 +47,6 @@ The setData function could be ommitted. The data may be set as array and second 
 $epay = new Transcard('paylogin', [
     'invoice' => 1000000000, // Could be either number or false(will be auto-generated if EPAY_GENERATE_INVOICE=TRUE)
     'amount' => 40.00, // Amount of the payment, double formatted either as double or string
-    'expiration' => '14.12.2019 20:46:00', // Could be either formatted date in d.m.Y H:i:s or false(will be auto-generated)
     'description' => 'Description of the payment in less than 100 symbols.' // Could be empty
 ]);
 ```
@@ -61,10 +57,10 @@ Retrieve the correct and formatted hidden fields, form, or array with all the ne
 // Both, URL OK and URL Cancel can be ommitted as not required by the ePay platform.
 
 // Would return all hidden fields as formatted html
-$epay->generatePaymentFields('https://ok.url', 'https://cancel.url');
+$epay->generatePaymentFields();
 
 // Would return html form with the first parameter as id
-$epay->generatePaymentForm('#form-id', 'https://ok.url', 'https://cancel.url');
+$epay->generatePaymentForm('#form-id');
 
 // Would return array with all needed parameters for the platform request you need to do on your own
 $epay->getPaymentParameters();
