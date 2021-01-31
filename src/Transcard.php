@@ -153,7 +153,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Verify if the received notification response is from trusted origin.
      *
      * @param [type] $encoded
      * @param [type] $response
@@ -185,7 +185,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Generate the data fingerprint.
      *
      * @param array $data
      * @return String
@@ -214,7 +214,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Parse the incoming data array from the Transcard service.
      *
      * @param String $data
      * @return array
@@ -281,7 +281,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Get the page parameters in a array.
      *
      * @return array
      */
@@ -300,7 +300,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Parse the results.
      *
      * @param [type] $pbKey
      * @param array $data
@@ -328,7 +328,7 @@ class Transcard
     }
 
     /**
-     * Undocumented function
+     * Format the data array to be send with the request.
      *
      * @param array $data
      * @return array

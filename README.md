@@ -5,7 +5,7 @@ Made with love and code by [Fundamental Studio Ltd.](https://www.fundamental.bg)
 
 ## Installation
 
-The package is compatible with Laravel 5.8+ version.
+The package is compatible with Laravel 7+ version.
 
 Via composer:
 ``` bash
